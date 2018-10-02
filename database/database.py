@@ -2,9 +2,9 @@ import sqlite3
 
 class UDBase:
 	def __init__(self, path):
-		self.__connection = sqlite3.connect(path)
+		self.__connection = sqlite3.connect(path, check_same_thread=False)
 	def connect(self, path):
-		self.__connection = sqlite3.connect(path)
+		self.__connection = sqlite3.connect(path, check_same_thread=False)
 	def disconnect(self):
 		self.__connection.close()
 	def getData(self, id):
