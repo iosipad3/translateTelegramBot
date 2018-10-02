@@ -37,7 +37,7 @@ try: # Main bot handling block
 	@bot.message_handler(func=lambda message: True)
 	def echo_all(message):
 		data = UsersDBase.getData(id=message.from_user.id)
-		if data[2]:
+		if data and data[2]:
 			bot.reply_to(message, translater.translate(text=message.text, lang_to=data[2], lang_from=data[1]))
 		else:
 			bot.reply_to(message, "Please, check your settings. \
