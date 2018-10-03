@@ -2,33 +2,38 @@ import telebot
 import Yandex # pip install pyyandextranslateapi
 import keys # File with bot_token and yandex_api_key
 from database import UsersDBase # Importing our database
+from markups import *
 
-try: # Main bot handling block
+try:
 	translater = Yandex.Translate(keys.yandex_api_key)
 	bot = telebot.TeleBot(keys.bot_token)
+
 	@bot.message_handler(commands=['start'])
 	def start(message):
-		bot.reply_to(message, "Hello, I'm TranslateBot! \
-		If you want me to translate something for you, use /help command")
+		bot.reply_to(message, "Hello, I'm TranslateBot! If you want me to translate something for you, use /help command")
 
 	@bot.message_handler(commands=['help'])
 	def help(message):
-		bot.reply_to(message, "Any translation have directions. \
-		Make me know what language to should I translate by using /settings command")
+		bot.send_message(chat_id=message.from_user.id, text="Any translation have directions. Set your specifications, please: ", \
+		reply_markup=help_markup)
+		# Your current languages:
 
-	@bot.message_handler(commands=['settings'])
-	def settings(message):
-		bot.reply_to(message, "For setting in what language to translate, use: /set_to command")
-
-	@bot.message_handler(commands=['set_to'])
-	def set_to(message):
-		message_text = message.text[8:]
-		if message_text in translater.getLangs()['langs'].keys():
-			UsersDBase.setData(id=message.from_user.id, lang_to=message_text)
-			bot.reply_to(message, "Successful")
-		else:
-			bot.reply_to(message, "Fail. \
-			Please, check available languages by using /languages command")
+	@bot.callback_query_handler(func=lambda call: True)
+	def callback(call):
+		if call.data=='settings':
+			bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id, reply_markup=settings_markup)
+		elif call.data=='current':
+			pass
+		elif call.data=='feed':
+			pass
+		elif call.data=='from':
+			pass
+		elif call.data=='to':
+			bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id, reply_markup=languages_markup)
+		else:#it's language code
+			bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id, reply_markup=help_markup)
+			UsersDBase.setData(id=call.from_user.id, lang_to=call.data)
+			# Notification of (non-)successful
 
 	@bot.message_handler(commands=['languages'])
 	def languages(message):
