@@ -16,14 +16,22 @@ try:
 	def help(message):
 		bot.send_message(chat_id=message.from_user.id, text="Any translation have directions. Set your specifications, please: ", \
 		reply_markup=help_markup)
-		# Your current languages:
 
 	@bot.callback_query_handler(func=lambda call: True)
 	def callback(call):
 		if call.data=='settings':
 			bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id, reply_markup=settings_markup)
 		elif call.data=='current':
-			pass
+			data = UsersDBase.getData(id=call.from_user.id)
+			if data:
+				settings="Your current settings: "
+				if data[1]:
+					settings = settings + "from={} ".format(data[1])
+				if data[2]:
+					settings = settings + "to={} ".format(data[2])
+				bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=settings)
+			else:
+				bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text="There are no settings yet")
 		elif call.data=='feed':
 			pass
 		elif call.data=='from':
@@ -33,7 +41,7 @@ try:
 		else:#it's language code
 			bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id, reply_markup=help_markup)
 			UsersDBase.setData(id=call.from_user.id, lang_to=call.data)
-			# Notification of (non-)successful
+			bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text="Settings has been updated")
 
 	@bot.message_handler(commands=['languages'])
 	def languages(message):
