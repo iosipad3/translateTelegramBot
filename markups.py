@@ -1,21 +1,21 @@
 import telebot
+from languages import get_langs
 
 help_markup = telebot.types.InlineKeyboardMarkup(row_width=1)
 settings = telebot.types.InlineKeyboardButton(text='Settings', callback_data='settings')
 current = telebot.types.InlineKeyboardButton(text='Show current settings', callback_data='current')
-feedback = telebot.types.InlineKeyboardButton(text='Send feedback', callback_data='feed')
-help_markup.add(settings, current, feedback)
+help_markup.add(settings, current)
 
 settings_markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-# set_from = telebot.types.InlineKeyboardButton(text='Set from language', callback_data='from')
+set_from = telebot.types.InlineKeyboardButton(text='Set from language', callback_data='from')
 set_to = telebot.types.InlineKeyboardButton(text='Set to language', callback_data='to')
-settings_markup.add(set_to)
+settings_markup.add(set_to, set_from)
 
-
-# Markup for laguages list
-languages_markup = telebot.types.InlineKeyboardMarkup(row_width=2)
-l_en = telebot.types.InlineKeyboardButton(text='ENG', callback_data='en')
-l_ru = telebot.types.InlineKeyboardButton(text='RUS', callback_data='ru')
-languages_markup.add(l_en, l_ru)
-# languages_from_markup = languages_markup NEED TO COPY!!! OR in destination add and delete after use
-# l_auto = telebot.types.InlineKeyboardButton(text='AUTO', callback_data='auto')
+# Markups for laguages list
+languages_from_markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+languages_to_markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+auto = telebot.types.InlineKeyboardButton(text='Auto-detection', callback_data='auto')
+languages_from_markup.add(auto)
+for lang_code, language in get_langs['langs'].items():
+	languages_to_markup.add(telebot.types.InlineKeyboardButton(text=language, callback_data=lang_code))
+	languages_from_markup.add(telebot.types.InlineKeyboardButton(text=language, callback_data='from' + lang_code))
