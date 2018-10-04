@@ -61,6 +61,10 @@ try:
 			bot.reply_to(message, "Please, check your settings. \
 			Translation direction should be specified")
 
-	bot.polling(none_stop=True)
+
+	try:
+		bot.polling(none_stop=True)
+	except Exception:
+		pass
 finally: # If something happened. KeyboardInterrupt, for example
 	UsersDBase.disconnect()
