@@ -62,9 +62,10 @@ try:
 			Translation direction should be specified")
 
 
-	try:
-		bot.polling(none_stop=True)
-	except Exception:
-		pass
+	while True:
+		try:
+			bot.polling(none_stop=True)
+		except Exception:
+			pass
 finally: # If something happened. KeyboardInterrupt, for example
 	UsersDBase.disconnect()
